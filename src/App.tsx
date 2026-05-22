@@ -65,7 +65,7 @@ export default function App() {
       <main>
         <Hero onSearch={handleSearch} />
 
-        <div className="max-w-7xl mx-auto px-6 space-y-24 pb-24">
+        <div id="content" className="max-w-7xl mx-auto px-6 space-y-24 pb-24 scroll-mt-32">
           {isSearching ? (
             <motion.section 
               initial="hidden"

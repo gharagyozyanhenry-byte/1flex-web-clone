@@ -37,15 +37,23 @@ export function Header() {
 
       <nav className="hidden md:flex items-center gap-8">
         <a href="#" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">Home</a>
-        <a href="#" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">Movies</a>
-        <a href="#" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">TV Shows</a>
+        <a href="#content" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">Movies</a>
+        <a href="#content" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">TV Shows</a>
       </nav>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-white hover:bg-white/10"
+          onClick={() => window.scrollTo({ top: 100, behavior: 'smooth' })}
+        >
           <Search className="w-5 h-5" />
         </Button>
-        <Button className="rounded-full px-6 bg-primary hover:bg-primary/90 text-white font-semibold flex gap-2">
+        <Button 
+          onClick={() => document.getElementById('content')?.scrollIntoView({ behavior: 'smooth' })}
+          className="rounded-full px-6 bg-primary hover:bg-primary/90 text-white font-semibold flex gap-2 transition-all hover:scale-105"
+        >
           <PlayCircle className="w-4 h-4" />
           Watch Free
         </Button>

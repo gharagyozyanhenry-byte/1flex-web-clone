@@ -1,4 +1,4 @@
-import { Calendar, Star } from 'lucide-react';
+import { Calendar, Star, Film } from 'lucide-react';
 import { Movie, IMAGE_BASE } from '@/lib/api';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,6 +10,7 @@ interface MovieCardProps {
 
 export function MovieCard({ movie, onClick }: MovieCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const title = movie.title || movie.name || 'Untitled';
   const year = movie.release_date ? movie.release_date.split('-')[0] : (movie.first_air_date ? movie.first_air_date.split('-')[0] : '2026');
 
@@ -26,14 +27,22 @@ export function MovieCard({ movie, onClick }: MovieCardProps) {
       onClick={() => onClick(movie)}
     >
       <div className="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/5 bg-[#1a1a2e] transition-all duration-500 group-hover:border-primary group-hover:shadow-[0_0_30px_rgba(229,9,20,0.3)]">
-        <motion.img
-          src={`${IMAGE_BASE}${movie.poster_path}`}
-          alt={title}
-          className="w-full h-full object-cover"
-          whileHover={{ scale: 1.1 }}
-          transition={{ duration: 0.6 }}
-          loading="lazy"
-        />
+        {movie.poster_path && !imageError ? (
+          <motion.img
+            src={`${IMAGE_BASE}${movie.poster_path}`}
+            alt={title}
+            className="w-full h-full object-cover"
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.6 }}
+            loading="lazy"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1a2e] to-[#0a0a0f] text-white/20">
+            <Film className="w-12 h-12 mb-2" />
+            <span className="text-[10px] uppercase tracking-widest font-bold px-4 text-center">{title}</span>
+          </div>
+        )}
         
         {/* Overlay */}
         <AnimatePresence>

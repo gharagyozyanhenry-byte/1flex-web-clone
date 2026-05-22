@@ -1,4 +1,4 @@
-import { X, Play, Star, Calendar, Info } from 'lucide-react';
+import { X, Play, Star, Calendar, Info, Download } from 'lucide-react';
 import { Movie, movieApi } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -14,6 +14,7 @@ interface MovieModalProps {
 export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (movie && isOpen) {
@@ -26,6 +27,7 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
       fetchTrailer();
     } else {
       setTrailerUrl(null);
+      setIsPlaying(false);
     }
   }, [movie, isOpen]);
 
@@ -33,6 +35,17 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
 
   const title = movie.title || movie.name || 'Untitled';
   const year = movie.release_date ? movie.release_date.split('-')[0] : (movie.first_air_date ? movie.first_air_date.split('-')[0] : '2026');
+
+  // Embed provider URL (using vidsrc.to as an example common for these sites)
+  const getEmbedUrl = () => {
+    const type = movie.media_type === 'tv' ? 'tv' : 'movie';
+    return `https://vidsrc.to/embed/${type}/${movie.id}`;
+  };
+
+  const handleDownload = () => {
+    // Standard procedure for these sites is often a high-speed download link or a CPA offer
+    window.open('https://netmovies-vo.storage.googleapis.com/index.html', '_blank');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -48,6 +61,14 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
               <div className="w-full h-full flex items-center justify-center bg-black/40">
                 <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
+            ) : isPlaying ? (
+              <iframe
+                src={getEmbedUrl()}
+                className="w-full h-full"
+                allow="autoplay; fullscreen"
+                title={title}
+                frameBorder="0"
+              />
             ) : trailerUrl ? (
               <iframe
                 src={`${trailerUrl}?autoplay=1&mute=0`}
@@ -61,10 +82,13 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
                   src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`} 
                   alt={title}
                   className="absolute inset-0 w-full h-full object-cover opacity-60"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://placehold.co/1280x720/1a1a2e/e50914?text=Preview+Not+Available';
+                  }}
                 />
                 <div className="relative z-10 text-center space-y-4">
                   <Play className="w-16 h-16 text-primary mx-auto opacity-80" />
-                  <p className="text-white/60 font-medium">Trailer not available</p>
+                  <p className="text-white/60 font-medium">Trailer not available. Click Watch Now to play.</p>
                 </div>
               </div>
             )}
@@ -100,10 +124,25 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
               </div>
             </div>
             
-            <Button size="lg" className="rounded-full px-10 py-7 text-lg font-bold bg-primary hover:bg-primary/90 shadow-[0_10px_20px_rgba(229,9,20,0.3)] transition-all hover:scale-105 active:scale-95">
-              <Play className="w-5 h-5 mr-3 fill-current" />
-              Watch Now Free
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button 
+                onClick={() => setIsPlaying(true)}
+                size="lg" 
+                className="rounded-full px-8 py-7 text-lg font-bold bg-primary hover:bg-primary/90 shadow-[0_10px_20px_rgba(229,9,20,0.3)] transition-all hover:scale-105 active:scale-95"
+              >
+                <Play className="w-5 h-5 mr-3 fill-current" />
+                Watch Now Free
+              </Button>
+              <Button 
+                onClick={handleDownload}
+                variant="secondary"
+                size="lg" 
+                className="rounded-full px-8 py-7 text-lg font-bold bg-white/5 hover:bg-white/10 text-white transition-all hover:scale-105 active:scale-95"
+              >
+                <Download className="w-5 h-5 mr-3" />
+                Download
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-4">
