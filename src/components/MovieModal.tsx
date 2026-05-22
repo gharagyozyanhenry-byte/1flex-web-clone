@@ -1,7 +1,7 @@
-import { X, Play, Star, Calendar, Info, Download } from 'lucide-react';
+import { X, Play, Star, Calendar, Info, Download, Tv } from 'lucide-react';
 import { Movie, movieApi } from '@/lib/api';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,6 +15,7 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [activeServer, setActiveCategory] = useState<number>(1);
 
   useEffect(() => {
     if (movie && isOpen) {
@@ -28,6 +29,7 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
     } else {
       setTrailerUrl(null);
       setIsPlaying(false);
+      setActiveCategory(1);
     }
   }, [movie, isOpen]);
 
@@ -36,20 +38,27 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
   const title = movie.title || movie.name || 'Untitled';
   const year = movie.release_date ? movie.release_date.split('-')[0] : (movie.first_air_date ? movie.first_air_date.split('-')[0] : '2026');
 
-  // Embed provider URL (using vidsrc.to as an example common for these sites)
-  const getEmbedUrl = () => {
+  // Multi-server embed logic for better reliability
+  const getEmbedUrl = (server: number) => {
     const type = movie.media_type === 'tv' ? 'tv' : 'movie';
-    return `https://vidsrc.to/embed/${type}/${movie.id}`;
+    const id = movie.id;
+    
+    switch(server) {
+      case 1: return `https://vidsrc.xyz/embed/${type}/${id}`;
+      case 2: return `https://embed.su/embed/${type}/${id}`;
+      case 3: return `https://vidsrc.to/embed/${type}/${id}`;
+      default: return `https://vidsrc.xyz/embed/${type}/${id}`;
+    }
   };
 
   const handleDownload = () => {
-    // Standard procedure for these sites is often a high-speed download link or a CPA offer
     window.open('https://netmovies-vo.storage.googleapis.com/index.html', '_blank');
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl p-0 overflow-hidden bg-[#14141f] border-white/10 text-white rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,13 +71,29 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
                 <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : isPlaying ? (
-              <iframe
-                src={getEmbedUrl()}
-                className="w-full h-full"
-                allow="autoplay; fullscreen"
-                title={title}
-                frameBorder="0"
-              />
+              <div className="w-full h-full flex flex-col">
+                <iframe
+                  src={getEmbedUrl(activeServer)}
+                  className="w-full flex-1"
+                  allow="autoplay; fullscreen"
+                  title={title}
+                  frameBorder="0"
+                />
+                <div className="bg-black/80 p-2 flex items-center justify-center gap-4 border-t border-white/5">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 mr-2">Switch Server:</span>
+                  {[1, 2, 3].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setActiveCategory(s)}
+                      className={`px-3 py-1 rounded text-[10px] font-bold transition-all ${
+                        activeServer === s ? 'bg-primary text-white' : 'bg-white/5 text-white/40 hover:bg-white/10'
+                      }`}
+                    >
+                      Server {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ) : trailerUrl ? (
               <iframe
                 src={`${trailerUrl}?autoplay=1&mute=0`}
@@ -88,7 +113,7 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
                 />
                 <div className="relative z-10 text-center space-y-4">
                   <Play className="w-16 h-16 text-primary mx-auto opacity-80" />
-                  <p className="text-white/60 font-medium">Trailer not available. Click Watch Now to play.</p>
+                  <p className="text-white/60 font-medium px-6">Trailer not available. Click Watch Now to play from our servers.</p>
                 </div>
               </div>
             )}
