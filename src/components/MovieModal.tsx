@@ -47,6 +47,11 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
       case 1: return `https://vidsrc.xyz/embed/${type}/${id}`;
       case 2: return `https://embed.su/embed/${type}/${id}`;
       case 3: return `https://vidsrc.to/embed/${type}/${id}`;
+      case 4: return `https://vidsrc.me/embed/${type}/${id}`;
+      case 5: return `https://dl.vidsrc.vip/${type}/${id}`;
+      case 6: return `https://vidsrc.icu/embed/${type}/${id}`;
+      case 7: return `https://2embed.cc/embed/${type}/${id}`;
+      case 8: return `https://superembed.stream/embed/${type}/${id}`;
       default: return `https://vidsrc.xyz/embed/${type}/${id}`;
     }
   };
@@ -75,18 +80,21 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
                 <iframe
                   src={getEmbedUrl(activeServer)}
                   className="w-full flex-1"
-                  allow="autoplay; fullscreen"
+                  allow="autoplay; fullscreen; picture-in-picture"
                   title={title}
                   frameBorder="0"
+                  allowFullScreen
                 />
-                <div className="bg-black/80 p-2 flex items-center justify-center gap-4 border-t border-white/5">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 mr-2">Switch Server:</span>
-                  {[1, 2, 3].map((s) => (
+                <div className="bg-black/80 p-3 flex flex-wrap items-center justify-center gap-2 border-t border-white/5 overflow-x-auto">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 mr-2 whitespace-nowrap">Switch Server:</span>
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
                     <button
                       key={s}
                       onClick={() => setActiveCategory(s)}
-                      className={`px-3 py-1 rounded text-[10px] font-bold transition-all ${
-                        activeServer === s ? 'bg-primary text-white' : 'bg-white/5 text-white/40 hover:bg-white/10'
+                      className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all min-w-[70px] ${
+                        activeServer === s 
+                          ? 'bg-primary text-white shadow-[0_0_10px_rgba(229,9,20,0.5)] scale-110' 
+                          : 'bg-white/5 text-white/40 hover:bg-white/10'
                       }`}
                     >
                       Server {s}
