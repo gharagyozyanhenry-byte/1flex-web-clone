@@ -27,10 +27,22 @@ async function fetchFromTMDB(endpoint: string) {
 }
 
 export const movieApi = {
-  getTrending: () => fetchFromTMDB('trending/all/week'),
-  getUpcoming: () => fetchFromTMDB('movie/upcoming'),
-  getPopularMovies: () => fetchFromTMDB('movie/popular'),
-  getPopularTv: () => fetchFromTMDB('tv/popular'),
+  getTrending: async () => {
+    const results = await fetchFromTMDB('trending/all/week');
+    return results.map((m: any) => ({ ...m, media_type: m.media_type || (m.first_air_date ? 'tv' : 'movie') }));
+  },
+  getUpcoming: async () => {
+    const results = await fetchFromTMDB('movie/upcoming');
+    return results.map((m: any) => ({ ...m, media_type: 'movie' }));
+  },
+  getPopularMovies: async () => {
+    const results = await fetchFromTMDB('movie/popular');
+    return results.map((m: any) => ({ ...m, media_type: 'movie' }));
+  },
+  getPopularTv: async () => {
+    const results = await fetchFromTMDB('tv/popular');
+    return results.map((m: any) => ({ ...m, media_type: 'tv' }));
+  },
   search: (query: string) => fetchFromTMDB(`search/multi?query=${encodeURIComponent(query)}`),
   getVideos: async (id: number, type: 'movie' | 'tv') => {
     try {
