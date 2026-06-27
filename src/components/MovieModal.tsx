@@ -49,12 +49,11 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
 
   const handleWatchNow = () => {
     onClose();
-    // Navigate to standalone Watch page via hash — the iframe runs in its own
-    // top-level context, avoiding the sandboxed-iframe-in-dialog problem.
-    const vid = imdbId || movie.id;
+    // Pass TMDB ID as primary (always valid for title/IMDb lookup) + IMDb as query param
     const type = isTV ? 'tv' : 'movie';
-    const tvQS = isTV ? '?season=1&episode=1' : '';
-    window.location.hash = `#/watch/${type}/${vid}${tvQS}`;
+    const tvQS = isTV ? '&season=1&episode=1' : '';
+    const imdbQS = imdbId ? `&imdb=${imdbId}` : '';
+    window.location.hash = `#/watch/${type}/${movie.id}${imdbQS}${tvQS}`;
   };
 
   const handleDownload = () => {
