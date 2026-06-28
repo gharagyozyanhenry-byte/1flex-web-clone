@@ -42,10 +42,13 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
 
   const handleWatchNow = () => {
     onClose();
-    // Vidking API uses TMDB numeric IDs directly
+    // Open Vidking player in a NEW browser tab — bypasses all iframe sandbox restrictions.
+    // This is the same pattern used by cineby.at and most streaming sites:
+    // native browser window = no sandbox inheritance.
     const type = isTV ? 'tv' : 'movie';
-    const tvQS = isTV ? '?season=1&episode=1' : '';
-    window.location.hash = `#/watch/${type}/${movie.id}${tvQS}`;
+    const tvPath = isTV ? '/1/1' : '';
+    const url = `https://www.vidking.net/embed/${type}/${movie.id}${tvPath}?color=e50914&autoPlay=true${isTV ? '&nextEpisode=true&episodeSelector=true' : ''}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleDownload = () => {

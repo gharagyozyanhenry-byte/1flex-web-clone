@@ -3,14 +3,13 @@ import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { MovieCard } from './components/MovieCard';
 import { MovieModal } from './components/MovieModal';
-import { Watch } from './components/Watch';
 import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
 import { movieApi, Movie } from './lib/api';
 import { TrendingUp, Tv, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function HomePage() {
+export default function App() {
   const [trending, setTrending] = useState<Movie[]>([]);
   const [upcoming, setUpcoming] = useState<Movie[]>([]);
   const [popularTv, setPopularTv] = useState<Movie[]>([]);
@@ -224,21 +223,4 @@ function HomePage() {
       />
     </div>
   );
-}
-
-export default function App() {
-  const [hash, setHash] = useState(() => window.location.hash);
-
-  useEffect(() => {
-    const handler = () => setHash(window.location.hash);
-    window.addEventListener('hashchange', handler);
-    return () => window.removeEventListener('hashchange', handler);
-  }, []);
-
-  // Standalone Watch player — NO layout, NO dialog, NO iframe sandbox inheritance
-  if (hash.startsWith('#/watch/')) {
-    return <Watch />;
-  }
-
-  return <HomePage />;
 }
