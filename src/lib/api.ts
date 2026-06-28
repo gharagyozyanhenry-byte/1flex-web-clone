@@ -26,16 +26,6 @@ async function fetchFromTMDB(endpoint: string) {
   }
 }
 
-async function fetchTMDB(endpoint: string) {
-  try {
-    const res = await fetch(`${BASE_URL}/${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=en-US`);
-    return await res.json();
-  } catch (error) {
-    console.error('TMDB Fetch Error:', error);
-    return null;
-  }
-}
-
 export const movieApi = {
   getTrending: async () => {
     const results = await fetchFromTMDB('trending/all/week');
@@ -61,20 +51,6 @@ export const movieApi = {
       const trailer = data.results?.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube');
       return trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
     } catch (error) {
-      return null;
-    }
-  },
-  /** Fetches IMDb ID from TMDB. Movies: from details. TV: from external_ids. */
-  getImdbId: async (id: number, type: 'movie' | 'tv'): Promise<string | null> => {
-    try {
-      if (type === 'movie') {
-        const data = await fetchTMDB(`movie/${id}`);
-        return data?.imdb_id || null;
-      } else {
-        const data = await fetchTMDB(`tv/${id}/external_ids`);
-        return data?.imdb_id || null;
-      }
-    } catch {
       return null;
     }
   },

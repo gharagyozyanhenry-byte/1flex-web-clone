@@ -13,28 +13,21 @@ interface MovieModalProps {
 
 export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
-  const [imdbId, setImdbId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const isTV = (movie?.media_type === 'tv' || (!movie?.release_date && !!movie?.first_air_date));
+  const isTV = movie?.media_type === 'tv' || (!movie?.release_date && !!movie?.first_air_date);
 
   useEffect(() => {
     if (movie && isOpen) {
-      const fetchData = async () => {
+      const fetchTrailer = async () => {
         setIsLoading(true);
-        const type = isTV ? 'tv' : 'movie';
-        const [trailer, imdb] = await Promise.all([
-          movieApi.getVideos(movie.id, type),
-          movieApi.getImdbId(movie.id, type),
-        ]);
-        setTrailerUrl(trailer);
-        setImdbId(imdb);
+        const url = await movieApi.getVideos(movie.id, isTV ? 'tv' : 'movie');
+        setTrailerUrl(url);
         setIsLoading(false);
       };
-      fetchData();
+      fetchTrailer();
     } else {
       setTrailerUrl(null);
-      setImdbId(null);
     }
   }, [movie, isOpen]);
 
@@ -49,11 +42,10 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
 
   const handleWatchNow = () => {
     onClose();
-    // Pass TMDB ID as primary (always valid for title/IMDb lookup) + IMDb as query param
+    // Vidking API uses TMDB numeric IDs directly
     const type = isTV ? 'tv' : 'movie';
-    const tvQS = isTV ? '&season=1&episode=1' : '';
-    const imdbQS = imdbId ? `&imdb=${imdbId}` : '';
-    window.location.hash = `#/watch/${type}/${movie.id}${imdbQS}${tvQS}`;
+    const tvQS = isTV ? '?season=1&episode=1' : '';
+    window.location.hash = `#/watch/${type}/${movie.id}${tvQS}`;
   };
 
   const handleDownload = () => {
@@ -77,7 +69,7 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
                 <div className="flex flex-col items-center gap-4">
                   <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                   <p className="text-white/40 font-bold uppercase tracking-widest text-[10px] animate-pulse">
-                    Loading details...
+                    Loading trailer...
                   </p>
                 </div>
               </div>
@@ -103,7 +95,7 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
                 <div className="relative z-10 text-center space-y-4">
                   <Play className="w-16 h-16 text-primary mx-auto opacity-80" />
                   <p className="text-white/60 font-medium px-6">
-                    Watch the full movie with our streaming servers.
+                    Click Watch Now to stream via Vidking.
                   </p>
                 </div>
               </div>
@@ -137,9 +129,6 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
                   <span>{year}</span>
                 </div>
                 <span>{isTV ? 'TV Series' : 'Movie'}</span>
-                {imdbId && (
-                  <span className="text-white/20 text-[10px]">{imdbId}</span>
-                )}
               </div>
             </div>
 
