@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { MovieCard } from './components/MovieCard';
 import { MovieModal } from './components/MovieModal';
+import MovieDetail from './components/MovieDetail';
 import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
 import { movieApi, Movie } from './lib/api';
@@ -10,6 +11,14 @@ import { TrendingUp, Tv, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
+  // Hash-based routing for movie/TV detail pages
+  const [hash, setHash] = useState(() => window.location.hash);
+  useEffect(() => {
+    const handler = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, []);
+  if (hash.match(/^#\/(movie|tv)\/\d+/)) return <MovieDetail />;
   const [trending, setTrending] = useState<Movie[]>([]);
   const [upcoming, setUpcoming] = useState<Movie[]>([]);
   const [popularTv, setPopularTv] = useState<Movie[]>([]);

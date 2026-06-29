@@ -14,6 +14,11 @@ export function MovieCard({ movie, onClick }: MovieCardProps) {
   const title = movie.title || movie.name || 'Untitled';
   const year = movie.release_date ? movie.release_date.split('-')[0] : (movie.first_air_date ? movie.first_air_date.split('-')[0] : '2026');
 
+  const handleClick = () => {
+    const type = movie.media_type || (movie.first_air_date ? 'tv' : 'movie');
+    window.location.hash = `#/${type}/${movie.id}`;
+  };
+
   return (
     <motion.div
       layout
@@ -24,7 +29,7 @@ export function MovieCard({ movie, onClick }: MovieCardProps) {
       className="relative group cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onClick(movie)}
+      onClick={handleClick}
     >
       <div className="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/5 bg-[#1a1a2e] transition-all duration-500 group-hover:border-primary group-hover:shadow-[0_0_30px_rgba(229,9,20,0.3)]">
         {movie.poster_path && !imageError ? (
