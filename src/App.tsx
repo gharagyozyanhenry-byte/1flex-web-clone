@@ -18,7 +18,7 @@ export default function App() {
     window.addEventListener('hashchange', handler);
     return () => window.removeEventListener('hashchange', handler);
   }, []);
-  if (hash.match(/^#\/(movie|tv)\/\d+/)) return <MovieDetail />;
+
   const [trending, setTrending] = useState<Movie[]>([]);
   const [upcoming, setUpcoming] = useState<Movie[]>([]);
   const [popularTv, setPopularTv] = useState<Movie[]>([]);
@@ -66,6 +66,9 @@ export default function App() {
       transition: { duration: 0.6, staggerChildren: 0.1 }
     }
   };
+
+  // Route to MovieDetail if hash matches (after all hooks)
+  if (hash.match(/^#\/(movie|tv)\/\d+/)) return <MovieDetail />;
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
