@@ -89,7 +89,9 @@ export default function MovieDetail() {
 
   const handleWatch = (withProgress?: number) => {
     const url = `https://www.vidking.net/embed/${type}/${movieId}?color=e50914&autoPlay=true${withProgress ? `&progress=${Math.floor(withProgress)}` : ''}`;
-    window.location.href = url;
+    // Navigate top-level window to break out of any iframe sandbox (e.g., Blink preview).
+    // Vidking uses a native <video> element on its own domain – no iframes, no sandbox.
+    window.top.location.href = url;
   };
 
   const handleBack = () => { window.location.hash = ''; };

@@ -42,13 +42,11 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
 
   const handleWatchNow = () => {
     onClose();
-    // Open Vidking player in a NEW browser tab — bypasses all iframe sandbox restrictions.
-    // This is the same pattern used by cineby.at and most streaming sites:
-    // native browser window = no sandbox inheritance.
+    // Navigate top-level window to Vidking — same-page experience, no iframes, no sandbox.
     const type = isTV ? 'tv' : 'movie';
     const tvPath = isTV ? '/1/1' : '';
     const url = `https://www.vidking.net/embed/${type}/${movie.id}${tvPath}?color=e50914&autoPlay=true${isTV ? '&nextEpisode=true&episodeSelector=true' : ''}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.top.location.href = url;
   };
 
   const handleDownload = () => {
