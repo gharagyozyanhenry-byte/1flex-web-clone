@@ -4,10 +4,11 @@ import { Hero } from './components/Hero';
 import { MovieCard } from './components/MovieCard';
 import { MovieModal } from './components/MovieModal';
 import MovieDetail from './components/MovieDetail';
+import { Watch } from './components/Watch';
 import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
 import { movieApi, Movie } from './lib/api';
-import { TrendingUp, Tv, Sparkles } from 'lucide-react';
+import { TrendingUp, Tv, Sparkles, Film, Star, Clock, Radio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
@@ -22,6 +23,10 @@ export default function App() {
   const [trending, setTrending] = useState<Movie[]>([]);
   const [upcoming, setUpcoming] = useState<Movie[]>([]);
   const [popularTv, setPopularTv] = useState<Movie[]>([]);
+  const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
+  const [topRated, setTopRated] = useState<Movie[]>([]);
+  const [airingToday, setAiringToday] = useState<Movie[]>([]);
+  const [onTheAir, setOnTheAir] = useState<Movie[]>([]);
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -30,14 +35,22 @@ export default function App() {
 
   useEffect(() => {
     const loadData = async () => {
-      const [trendingData, upcomingData, tvData] = await Promise.all([
+      const [trendingData, upcomingData, tvData, nowPlayingData, topRatedData, airingData, onAirData] = await Promise.all([
         movieApi.getTrending(),
         movieApi.getUpcoming(),
-        movieApi.getPopularTv()
+        movieApi.getPopularTv(),
+        movieApi.getNowPlaying(),
+        movieApi.getTopRatedMovies(),
+        movieApi.getAiringToday(),
+        movieApi.getOnTheAir(),
       ]);
       setTrending(trendingData.slice(0, 12));
       setUpcoming(upcomingData.slice(0, 12));
       setPopularTv(tvData.slice(0, 12));
+      setNowPlaying(nowPlayingData.slice(0, 12));
+      setTopRated(topRatedData.slice(0, 12));
+      setAiringToday(airingData.slice(0, 12));
+      setOnTheAir(onAirData.slice(0, 12));
     };
     loadData();
   }, []);
@@ -66,6 +79,9 @@ export default function App() {
       transition: { duration: 0.6, staggerChildren: 0.1 }
     }
   };
+
+  // Route to Watch player
+  if (hash.match(/^#\/watch\/(movie|tv)\/\d+/)) return <Watch />;
 
   // Route to MovieDetail if hash matches (after all hooks)
   if (hash.match(/^#\/(movie|tv)\/\d+/)) return <MovieDetail />;
@@ -193,6 +209,60 @@ export default function App() {
                 </motion.section>
               )}
 
+              {(activeCategory === 'all' || activeCategory === 'movies') && (
+                <motion.section 
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={sectionVariants}
+                  className="space-y-8"
+                >
+                  <div className="flex items-center justify-between border-l-4 border-primary pl-6">
+                    <div className="space-y-1">
+                      <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3">
+                        <Film className="text-primary w-8 h-8" />
+                        Now Playing
+                      </h2>
+                      <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
+                        Currently in theaters
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
+                    {nowPlaying.map((movie) => (
+                      <MovieCard key={movie.id} movie={movie} onClick={handleMovieClick} />
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+
+              {(activeCategory === 'all' || activeCategory === 'movies') && (
+                <motion.section 
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={sectionVariants}
+                  className="space-y-8"
+                >
+                  <div className="flex items-center justify-between border-l-4 border-primary pl-6">
+                    <div className="space-y-1">
+                      <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3">
+                        <Star className="text-primary w-8 h-8" />
+                        Top Rated Movies
+                      </h2>
+                      <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
+                        Critically acclaimed and fan favorites
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
+                    {topRated.map((movie) => (
+                      <MovieCard key={movie.id} movie={movie} onClick={handleMovieClick} />
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+
               {(activeCategory === 'all' || activeCategory === 'tv') && (
                 <motion.section 
                   initial="hidden"
@@ -214,6 +284,60 @@ export default function App() {
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
                     {popularTv.map((movie) => (
+                      <MovieCard key={movie.id} movie={movie} onClick={handleMovieClick} />
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+
+              {(activeCategory === 'all' || activeCategory === 'tv') && (
+                <motion.section 
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={sectionVariants}
+                  className="space-y-8"
+                >
+                  <div className="flex items-center justify-between border-l-4 border-primary pl-6">
+                    <div className="space-y-1">
+                      <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3">
+                        <Clock className="text-primary w-8 h-8" />
+                        Airing Today
+                      </h2>
+                      <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
+                        Fresh episodes available now
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
+                    {airingToday.map((movie) => (
+                      <MovieCard key={movie.id} movie={movie} onClick={handleMovieClick} />
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+
+              {(activeCategory === 'all' || activeCategory === 'tv') && (
+                <motion.section 
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={sectionVariants}
+                  className="space-y-8"
+                >
+                  <div className="flex items-center justify-between border-l-4 border-primary pl-6">
+                    <div className="space-y-1">
+                      <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3">
+                        <Radio className="text-primary w-8 h-8" />
+                        On The Air
+                      </h2>
+                      <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
+                        Currently broadcasting series
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
+                    {onTheAir.map((movie) => (
                       <MovieCard key={movie.id} movie={movie} onClick={handleMovieClick} />
                     ))}
                   </div>

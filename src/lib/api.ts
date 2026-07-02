@@ -80,6 +80,22 @@ export const movieApi = {
     const results = await fetchFromTMDB('tv/popular');
     return results.map((m: any) => ({ ...m, media_type: 'tv' }));
   },
+  getNowPlaying: async () => {
+    const results = await fetchFromTMDB('movie/now_playing');
+    return results.map((m: any) => ({ ...m, media_type: 'movie' }));
+  },
+  getTopRatedMovies: async () => {
+    const results = await fetchFromTMDB('movie/top_rated');
+    return results.map((m: any) => ({ ...m, media_type: 'movie' }));
+  },
+  getAiringToday: async () => {
+    const results = await fetchFromTMDB('tv/airing_today');
+    return results.map((m: any) => ({ ...m, media_type: 'tv' }));
+  },
+  getOnTheAir: async () => {
+    const results = await fetchFromTMDB('tv/on_the_air');
+    return results.map((m: any) => ({ ...m, media_type: 'tv' }));
+  },
   search: (query: string) => fetchFromTMDB(`search/multi?query=${encodeURIComponent(query)}`),
   getVideos: async (id: number, type: 'movie' | 'tv') => {
     try {
