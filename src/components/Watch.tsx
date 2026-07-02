@@ -67,7 +67,7 @@ export function Watch() {
   }, [tmdbId, type, isTV, season, episode]);
 
   const handleOpenExternal = () => {
-    window.top?.location.assign(directUrl);
+    window.open(directUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
