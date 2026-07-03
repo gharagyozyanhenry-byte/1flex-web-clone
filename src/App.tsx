@@ -4,7 +4,6 @@ import { Hero } from './components/Hero';
 import { MovieCard } from './components/MovieCard';
 import { MovieModal } from './components/MovieModal';
 import MovieDetail from './components/MovieDetail';
-import { Watch } from './components/Watch';
 import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
 import { movieApi, Movie } from './lib/api';
@@ -80,10 +79,7 @@ export default function App() {
     }
   };
 
-  // Route to Watch player
-  if (hash.match(/^#\/watch\/(movie|tv)\/\d+/)) return <Watch />;
-
-  // Route to MovieDetail if hash matches (after all hooks)
+  // Route to MovieDetail if hash matches
   if (hash.match(/^#\/(movie|tv)\/\d+/)) return <MovieDetail />;
 
   return (

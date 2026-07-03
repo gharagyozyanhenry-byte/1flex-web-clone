@@ -88,8 +88,10 @@ export default function MovieDetail() {
   };
 
   const handleWatch = (withProgress?: number) => {
-    const tvPath = isTV ? `?season=1&episode=1` : '';
-    window.location.hash = `#/watch/${type}/${movieId}${tvPath}`;
+    const tvPath = isTV ? '/1/1' : '';
+    const progress = withProgress ? `&progress=${Math.floor(withProgress)}` : '';
+    const url = `https://www.vidking.net/embed/${type}/${movieId}${tvPath}?color=e50914&autoPlay=true${isTV ? '&nextEpisode=true&episodeSelector=true' : ''}${progress}`;
+    window.top.location.href = url;
   };
 
   const handleBack = () => { window.location.hash = ''; };
