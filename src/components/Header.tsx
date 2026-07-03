@@ -3,7 +3,12 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 
-export function Header() {
+interface HeaderProps {
+  activeCategory: 'all' | 'movies' | 'tv';
+  onCategoryChange: (cat: 'all' | 'movies' | 'tv') => void;
+}
+
+export function Header({ activeCategory, onCategoryChange }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -14,6 +19,13 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleNav = (cat: 'all' | 'movies' | 'tv') => {
+    onCategoryChange(cat);
+    window.location.hash = '';
+    const content = document.getElementById('content');
+    if (content) content.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <header
       className={cn(
@@ -21,7 +33,7 @@ export function Header() {
         isScrolled ? 'bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/10' : 'bg-transparent'
       )}
     >
-      <div className="flex items-center gap-2 cursor-pointer group">
+      <div className="flex items-center gap-2 cursor-pointer group" onClick={() => handleNav('all')}>
         <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 transition-transform group-hover:scale-110">
           <Film className="text-white w-6 h-6" />
         </div>
@@ -35,10 +47,25 @@ export function Header() {
         </div>
       </div>
 
-      <nav className="hidden md:flex items-center gap-8">
-        <a href="#" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">Home</a>
-        <a href="#content" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">Movies</a>
-        <a href="#content" className="text-sm font-medium text-white/70 hover:text-primary transition-colors">TV Shows</a>
+      <nav className="hidden md:flex items-center gap-6">
+        <button
+          onClick={() => handleNav('movies')}
+          className={cn(
+            'text-sm font-semibold transition-colors px-2 py-1 rounded',
+            activeCategory === 'movies' ? 'text-white' : 'text-white/50 hover:text-white/80'
+          )}
+        >
+          Movies
+        </button>
+        <button
+          onClick={() => handleNav('tv')}
+          className={cn(
+            'text-sm font-semibold transition-colors px-2 py-1 rounded',
+            activeCategory === 'tv' ? 'text-white' : 'text-white/50 hover:text-white/80'
+          )}
+        >
+          TV Shows
+        </button>
       </nav>
 
       <div className="flex items-center gap-4">

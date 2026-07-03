@@ -84,7 +84,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
-      <Header />
+      <Header activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
       
       <main>
         <Hero onSearch={handleSearch} />
