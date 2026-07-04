@@ -44,8 +44,7 @@ export function MovieModal({ movie, isOpen, onClose }: MovieModalProps) {
     onClose();
     const type = isTV ? 'tv' : 'movie';
     const tvPath = isTV ? '/1/1' : '';
-    const url = `https://www.vidking.net/embed/${type}/${movie.id}${tvPath}?color=e50914&autoPlay=true${isTV ? '&nextEpisode=true&episodeSelector=true' : ''}`;
-    window.top.location.href = url;
+    window.location.hash = `#/watch/${type}/${movie.id}${tvPath}`;
   };
 
   const handleDownload = () => {

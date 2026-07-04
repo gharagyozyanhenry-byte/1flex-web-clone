@@ -4,6 +4,7 @@ import { Hero } from './components/Hero';
 import { MovieCard } from './components/MovieCard';
 import { MovieModal } from './components/MovieModal';
 import MovieDetail from './components/MovieDetail';
+import { Watch } from './components/Watch';
 import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
 import { movieApi, Movie } from './lib/api';
@@ -78,6 +79,19 @@ export default function App() {
       transition: { duration: 0.6, staggerChildren: 0.1 }
     }
   };
+
+  // Route to Watch player
+  const watchMatch = hash.match(/^#\/watch\/(movie|tv)\/(\d+)\/?(\d+)?\/?(\d+)?/);
+  if (watchMatch) {
+    return (
+      <Watch
+        type={watchMatch[1] as 'movie' | 'tv'}
+        tmdbId={watchMatch[2]}
+        season={watchMatch[3]}
+        episode={watchMatch[4]}
+      />
+    );
+  }
 
   // Route to MovieDetail if hash matches
   if (hash.match(/^#\/(movie|tv)\/\d+/)) return <MovieDetail />;

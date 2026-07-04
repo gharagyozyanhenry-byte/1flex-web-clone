@@ -89,9 +89,7 @@ export default function MovieDetail() {
 
   const handleWatch = (withProgress?: number) => {
     const tvPath = isTV ? '/1/1' : '';
-    const progress = withProgress ? `&progress=${Math.floor(withProgress)}` : '';
-    const url = `https://www.vidking.net/embed/${type}/${movieId}${tvPath}?color=e50914&autoPlay=true${isTV ? '&nextEpisode=true&episodeSelector=true' : ''}${progress}`;
-    window.top.location.href = url;
+    window.location.hash = `#/watch/${type}/${movieId}${tvPath}`;
   };
 
   const handleBack = () => { window.location.hash = ''; };
